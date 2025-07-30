@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiresHabar | Современный чат</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="chat-container">
+    <header class="chat-header">
+      <h1><i class="fas fa-comment-dots"></i> MiresHabar</h1>
+      <div class="online-status" id="status">
+        <span class="status-dot"></span>
+        <span>Подключение...</span>
+      </div>
+    </header>
+
+    <main class="chat-main">
+      <div class="chat-sidebar">
+        <h3><i class="fas fa-users"></i> Онлайн (<span id="onlineCount">0</span>)</h3>
+        <ul id="userList"></ul>
+      </div>
+
+      <div class="chat-messages" id="messages"></div>
+    </main>
+
+    <div class="chat-form-container">
+      <form id="chatForm">
+        <input type="text" id="messageInput" placeholder="Напишите сообщение..." required>
+        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
