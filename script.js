@@ -14,9 +14,9 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
 // Состояние игры
-let gameId = "duel1"; // Уникальный ID игры
-let playerId = Math.random().toString(36).substr(2, 9); // Случайный ID игрока
-let playerNumber = null; // 1 или 2
+let gameId = "duel1";
+let playerId = Math.random().toString(36).substr(2, 9);
+let playerNumber = null;
 
 // Подключение к игре
 function joinGame() {
@@ -26,7 +26,6 @@ function joinGame() {
     const gameData = snapshot.val();
 
     if (!gameData) {
-      // Первый игрок
       playerNumber = 1;
       gameRef.set({
         player1: { id: playerId, score: 0 },
@@ -34,7 +33,6 @@ function joinGame() {
         winner: null,
       });
     } else if (!gameData.player2) {
-      // Второй игрок
       playerNumber = 2;
       gameRef.update({
         player2: { id: playerId, score: 0 },
@@ -49,7 +47,7 @@ function joinGame() {
   });
 }
 
-// Обработка клика
+// Клик по кнопке
 function clickButton(playerNum) {
   if (playerNum !== playerNumber) return;
 
@@ -59,13 +57,9 @@ function clickButton(playerNum) {
   playerRef.transaction((currentScore) => {
     return (currentScore || 0) + 1;
   });
-
-  // Воспроизведение звука клика
-  const clickSound = new Audio("sounds/click.mp3");
-  clickSound.play().catch(e => console.log("Звук не воспроизведён:", e));
 }
 
-// Отслеживание изменений в игре
+// Отслеживание игры
 function startGameListener() {
   const gameRef = database.ref(`games/${gameId}`);
 
@@ -73,7 +67,6 @@ function startGameListener() {
     const gameData = snapshot.val();
     if (!gameData) return;
 
-    // Обновление счёта
     if (gameData.player1) {
       document.querySelector("#player1 .score").textContent = gameData.player1.score;
     }
@@ -87,12 +80,7 @@ function startGameListener() {
       gameRef.update({ winner });
 
       const status = document.getElementById("status");
-      if (winner === playerNumber) {
-        status.textContent = "Ты победил! 🎉";
-        new Audio("sounds/win.mp3").play().catch(e => console.log(e));
-      } else {
-        status.textContent = "Ты проиграл... 😢";
-      }
+      status.textContent = winner === playerNumber ? "Ты победил! 🎉" : "Ты проиграл... 😢";
       disableButtons();
     }
 
@@ -102,7 +90,7 @@ function startGameListener() {
   });
 }
 
-// Блокировка кнопок после игры
+// Блокировка кнопок
 function disableButtons() {
   document.querySelectorAll(".click-btn").forEach(btn => {
     btn.disabled = true;
@@ -117,5 +105,5 @@ function updateUI() {
     : "Игра началась! Кликай быстрее!";
 }
 
-// Запуск игры при загрузке страницы
+// Запуск при загрузке
 window.onload = joinGame;
