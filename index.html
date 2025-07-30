@@ -1,40 +1,253 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MiresHabar | Современный чат</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Messenger</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        /* Основные стили */
+        :root {
+            --primary: #0084ff;
+            --bg-dark: #0e1621;
+            --bg-light: #f0f2f5;
+            --text-dark: #e1e3e6;
+            --text-light: #1e2a3a;
+            --message-in: #2b5278;
+            --message-out: #2b5278;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 500px;
+            height: 90vh;
+            background: var(--bg-dark);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            padding: 15px 20px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            word-break: break-word;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .incoming {
+            align-self: flex-start;
+            background: var(--message-in);
+            color: var(--text-dark);
+        }
+
+        .outgoing {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+        }
+
+        .input-area {
+            padding: 10px 15px;
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-dark);
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .input-area input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .input-area button {
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        /* Светлая тема */
+        body[data-theme="light"] {
+            background: var(--bg-light);
+            --message-in: #e5e5ea;
+            --message-out: var(--primary);
+        }
+
+        body[data-theme="light"] .app {
+            background: var(--bg-light);
+            color: var(--text-light);
+        }
+
+        body[data-theme="light"] .input-area input {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-light);
+        }
+
+        body[data-theme="light"] .input-area input::placeholder {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 500px) {
+            .app {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="chat-container">
-    <header class="chat-header">
-      <h1><i class="fas fa-comment-dots"></i> MiresHabar</h1>
-      <div class="online-status" id="status">
-        <span class="status-dot"></span>
-        <span>Подключение...</span>
-      </div>
-    </header>
+    <div class="app">
+        <div class="header">
+            <h1>Web Messenger</h1>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
 
-    <main class="chat-main">
-      <div class="chat-sidebar">
-        <h3><i class="fas fa-users"></i> Онлайн (<span id="onlineCount">0</span>)</h3>
-        <ul id="userList"></ul>
-      </div>
+        <div class="messages" id="messages"></div>
 
-      <div class="chat-messages" id="messages"></div>
-    </main>
-
-    <div class="chat-form-container">
-      <form id="chatForm">
-        <input type="text" id="messageInput" placeholder="Напишите сообщение..." required>
-        <button type="submit"><i class="fas fa-paper-plane"></i></button>
-      </form>
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="Напишите сообщение...">
+            <button id="sendButton">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
     </div>
-  </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="app.js"></script>
+    <script>
+        // Подключение к серверу (замените на свой URL с Glitch/Heroku)
+        const socket = io("https://your-socket-server.glitch.me");
+
+        // Элементы DOM
+        const messagesContainer = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const themeToggle = document.getElementById('themeToggle');
+
+        // Отправка сообщения
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text) return;
+
+            // Добавляем своё сообщение
+            addMessage(text, false);
+            
+            // Отправляем на сервер
+            socket.emit('message', text);
+            
+            // Очищаем поле ввода
+            messageInput.value = '';
+        }
+
+        // Добавление сообщения в чат
+        function addMessage(text, isIncoming) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', isIncoming ? 'incoming' : 'outgoing');
+            messageElement.textContent = text;
+            messagesContainer.appendChild(messageElement);
+            
+            // Прокрутка вниз
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Смена темы
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+
+            // Меняем иконку
+            const icon = themeToggle.querySelector('i');
+            icon.classList.toggle('fa-moon');
+            icon.classList.toggle('fa-sun');
+        }
+
+        // Получение сообщений от сервера
+        socket.on('message', (text) => {
+            addMessage(text, true);
+        });
+
+        // Обработчики событий
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        themeToggle.addEventListener('click', toggleTheme);
+    </script>
 </body>
 </html>
