@@ -1,13 +1,14 @@
 // Конфигурация Firebase (замени значения на свои из Firebase Console!)
 const firebaseConfig = {
-  apiKey: "AIzaSyAftE7aN_6PWAo6nxcisz5rrFk67jt2n-k",
-  authDomain: "game-649c1.firebaseapp.com",
-  databaseURL: "https://game-649c1-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "game-649c1",
-  storageBucket: "game-649c1.firebasestorage.app",
-  messagingSenderId: "177082622080",
-  appId: "1:177082622080:web:2d522421fe30a3dda70665"
-};
+    apiKey: "AIzaSyAftE7aN_6PWAo6nxcisz5rrFk67jt2n-k",
+    authDomain: "game-649c1.firebaseapp.com",
+    databaseURL: "https://game-649c1-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "game-649c1",
+    storageBucket: "game-649c1.firebasestorage.app",
+    messagingSenderId: "177082622080",
+    appId: "1:177082622080:web:20aa651b793195d7a70665",
+    measurementId: "G-38WJK8J25X"
+  };
 
 // Инициализация Firebase
 firebase.initializeApp(firebaseConfig);
