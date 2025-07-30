@@ -1,40 +1,30 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MiresHabar | Современный чат</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кликер-дуэль!</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="chat-container">
-    <header class="chat-header">
-      <h1><i class="fas fa-comment-dots"></i> MiresHabar</h1>
-      <div class="online-status" id="status">
-        <span class="status-dot"></span>
-        <span>Подключение...</span>
-      </div>
-    </header>
-
-    <main class="chat-main">
-      <div class="chat-sidebar">
-        <h3><i class="fas fa-users"></i> Онлайн (<span id="onlineCount">0</span>)</h3>
-        <ul id="userList"></ul>
-      </div>
-
-      <div class="chat-messages" id="messages"></div>
-    </main>
-
-    <div class="chat-form-container">
-      <form id="chatForm">
-        <input type="text" id="messageInput" placeholder="Напишите сообщение..." required>
-        <button type="submit"><i class="fas fa-paper-plane"></i></button>
-      </form>
+    <div class="game-container">
+        <h1>🔥 КЛИКЕР-ДУЭЛЬ 🔥</h1>
+        <div class="players">
+            <div class="player" id="player1">
+                <h2>Игрок 1</h2>
+                <div class="score">0</div>
+                <button class="click-btn" onclick="clickButton(1)">ЖМИ!</button>
+            </div>
+            <div class="player" id="player2">
+                <h2>Игрок 2</h2>
+                <div class="score">0</div>
+                <button class="click-btn" onclick="clickButton(2)">ЖМИ!</button>
+            </div>
+        </div>
+        <div class="game-status" id="status">Ожидание игроков...</div>
     </div>
-  </div>
-
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
